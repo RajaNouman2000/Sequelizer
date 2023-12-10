@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import fs from "fs";
+import fs, { truncate } from "fs";
 import path from "path";
 
 import {
@@ -167,7 +167,7 @@ export const averagePaymentMadeByCustomer = async (req, res) => {
         attributes: [],
       },
     ],
-    group: ["customerName","customerNumber"],
+    group: ["customerName"],
     having: sequelize.literal("average_salary > 1000"),
   });
   
@@ -175,21 +175,63 @@ export const averagePaymentMadeByCustomer = async (req, res) => {
 };
 
 export const totalNumberOfTimeAProductIsOrderInQunatity = async (req, res) => {
-  const result = await Product.findAll({
-    attributes: [
-      "productName",
-       [sequelize.fn("sum", sequelize.col("orderdetails.quantityOrdered")), "average_salary"],
-    ],
-    include: [
-      {
-        model: OrderDetail,
-        attributes: [],
-        required:true
-        
+  try{
+    const result = await Product.findAll({
+      attributes: [
+        "productName",
+         [sequelize.fn("sum", sequelize.col("orderdetails.quantityOrdered")), "Total Orders"],
+      ],
+      include: [
+        {
+          model: OrderDetail,
+          attributes: [],
+          required:true
+          
+        },
+      ],
+      group: ["product.productName"],
+    })
+    res.send(result)
+  } catch (error) {
+    console.error('Error in namesOfEmployees:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+ 
+};
+
+export const employeeNotAssignedToCustomer= async (req,res)=>{
+  try{
+    const result = await Employee.findAll({
+      attributes: [
+        "lastName", "firstName",
+      ],
+     
+      include: [
+        {
+          model: Customer,
+          attributes: [],
+          required: false,
+                     
+        },
+        {
+          model: Office,
+          attributes: ["country"], 
+          required:true,
+          where: {
+            country:'USA'
+          },         
+        },
+      ],
+      
+      where: {
+        '$customers.salesRepEmployeeNumber$': null, // Use the correct alias for the association
       },
-    ],
-    group: ["product.productName"],
-  })
+    });
+    res.send(result)
+  } catch (error) {
+    console.error('Error in namesOfEmployees:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 }
 
 
@@ -202,5 +244,6 @@ export default {
   namesOfEmployees,
   totalNumberOfOrderByCustomer,
   averagePaymentMadeByCustomer,
-  totalNumberOfTimeAProductIsOrderInQunatity
+  totalNumberOfTimeAProductIsOrderInQunatity,
+  employeeNotAssignedToCustomer
  };

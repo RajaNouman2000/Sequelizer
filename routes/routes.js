@@ -7,7 +7,8 @@ import {
     namesOfEmployees,
     totalNumberOfOrderByCustomer,
     averagePaymentMadeByCustomer,
-    totalNumberOfTimeAProductIsOrderInQunatity
+    totalNumberOfTimeAProductIsOrderInQunatity,
+    employeeNotAssignedToCustomer,
   }
   from "../controller/controller.js";
   
@@ -23,6 +24,7 @@ router.get('/namesOfEmployees',namesOfEmployees);
 router.get('/totalNumberOfOrderByCustomer',totalNumberOfOrderByCustomer);
 router.get('/averagePaymentMadeByCustomer',averagePaymentMadeByCustomer);
 router.get('/totalNumberOfTimeAProductIsOrderInQunatity', totalNumberOfTimeAProductIsOrderInQunatity);
+router.get('/employeeNotAssignedToCustomer', employeeNotAssignedToCustomer);
 
 
 export default router;
